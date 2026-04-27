@@ -96,9 +96,24 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  char buff[16];
+  float temperature;
+  uint32_t adcResult;
+
+  lcd_Init();
+  lcd_Clear();
+  lcd_Puts("Temperature :");
+  HAL_ADC_Start(&hadc1);
   while (1)
   {
-
+	  HAL_ADC_PollForConversion(&hadc1, 100);
+	  adcResult=HAL_ADC_GetValue(&hadc1);
+	  temperature=((float)adcResult)*3300.0/4095.0;
+	  temperature=(temperature-500.0)/10;
+	  lcd_Goto(0,1);
+	  sprintf(buff, "%5.2f C", temperature);
+	  lcd_Puts(buff);
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -208,7 +223,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
